@@ -12,9 +12,9 @@ const CLASSES = [
 ];
 
 const STATIC_ADDRESS = {
-  line1: "100 Pearl Street",
+  line1: "1 Main Street",
   city: "Hartford",
-  zip: "06103",
+  zip: "06106",
   state: "Connecticut"
 };
 
@@ -28,7 +28,6 @@ const BG_IMAGE_URL = "https://images.unsplash.com/photo-1643295054171-faf3f2491e
 
 // --- Helper Functions ---
 
-// UPDATED: Validates SSN constraints (No 666, 00, or 0000)
 const generateSSN = () => {
   let area = "";
   let group = "";
@@ -52,6 +51,16 @@ const generateSSN = () => {
   return `${area}-${group}-${serial}`;
 };
 
+// Generate Unique Random EEID (6 digits)
+const generateUniqueEEID = (usedIds) => {
+  let id;
+  do {
+    id = faker.string.numeric(6); // Generate random 6-digit ID
+  } while (usedIds.has(id));      // Retry if it already exists
+  usedIds.add(id);
+  return id;
+};
+
 const getAge = (birthDate) => {
   const today = new Date();
   const birth = new Date(birthDate);
@@ -68,7 +77,7 @@ const formatDate = (dateObj) => {
   const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
   const dd = String(dateObj.getDate()).padStart(2, '0');
   const yyyy = dateObj.getFullYear();
-  return `${mm}-${dd}-${yyyy}`;
+  return `${mm}/${dd}/${yyyy}`;
 };
 
 const getTimestamp = () => {
@@ -106,13 +115,13 @@ const createRow = (eeId, type, memberType, lastName, firstName) => {
     "", eeId, lastName, memberType === "Employee" ? firstName : faker.person.firstName(),
     email, memberType, generateSSN(), dobStr, age,
     faker.person.sex().toUpperCase() === 'FEMALE' ? 'F' : 'M',
-    "N", isEmployee ? "01-01-2023" : "",
+    "N", isEmployee ? "01/01/2023" : "",
     isEmployee ? faker.number.int({ min: 50000, max: 90000 }) : "",
     isEmployee ? faker.helpers.arrayElement(CLASSES) : "",
     STATIC_ADDRESS.line1, "", STATIC_ADDRESS.city, STATIC_ADDRESS.zip, STATIC_ADDRESS.state,
-    "yes", "no", "",
-    isEmployee ? faker.number.float({ min: 400, max: 1200, precision: 0.01 }).toFixed(2) : "",
-    isEmployee ? faker.number.float({ min: 450, max: 1300, precision: 0.01 }).toFixed(2) : ""
+    "yes", "no", "", "", ""
+    // isEmployee ? faker.number.float({ min: 400, max: 1200, precision: 0.01 }).toFixed(2) : "",
+    // isEmployee ? faker.number.float({ min: 450, max: 1300, precision: 0.01 }).toFixed(2) : ""
   ];
 };
 
@@ -150,6 +159,7 @@ export default function App() {
   const handleGenerate = async () => {
     setLoading(true);
     const timestamp = getTimestamp();
+    const usedIds = new Set();
 
     for (let i = 0; i < config.numSheets; i++) {
       const rows = [];
@@ -168,7 +178,7 @@ export default function App() {
       ]);
 
       for (let h = 0; h < config.numHouseholds; h++) {
-        const eeId = (1000 + h).toString();
+        const eeId = generateUniqueEEID(usedIds);
         const lastName = faker.person.lastName();
         const firstName = faker.person.firstName();
 
@@ -233,21 +243,17 @@ export default function App() {
         ${darkMode ? 'bg-slate-900/90' : 'bg-white/80'}`}></div>
 
       {/* --- Header --- */}
-      {/* --- Header with Cool Interactions --- */}
       <header className={`relative z-10 w-full px-6 py-4 flex justify-between items-center border-b backdrop-blur-md shadow-sm
          ${darkMode ? 'border-white/10 bg-slate-900/60' : 'border-slate-200 bg-white/60'}`}>
 
-        {/* Added 'group' class to parent to trigger hover effects on children */}
         <div className="flex items-center gap-2 group cursor-pointer select-none">
 
-          {/* Icon: Spins 360 + Glows on Hover */}
           <div className={`p-2 rounded-lg text-white shadow-md bg-[#50C5BC] 
             transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] 
             group-hover:rotate-[360deg] group-hover:scale-110 group-hover:shadow-[0_0_15px_#50C5BC]`}>
             <img src="/favicon.png" alt="DataPrep.io" width="24" height="24" />
           </div>
 
-          {/* Text: 'Forge' slides right and changes gradient on hover */}
           <div className="flex items-baseline">
             <span className="font-bold text-xl tracking-tight">DataPrep</span>
             <span className={`font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#50C5BC] to-[#50C5BC] 
@@ -281,7 +287,6 @@ export default function App() {
             <h1 className="text-2xl md:text-3xl font-extrabold mb-2">Generate Dataset</h1>
             <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Instant PII-compliant test data for enrollment workflows.
-              {/* Badge: Pulsing Version Indicator */}
               <span className={`ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border opacity-80
             ${darkMode ? 'border-[#50C5BC]/40 text-[#50C5BC] bg-[#50C5BC]/10' : 'border-[#50C5BC]/40 text-[#50C5BC] bg-[#50C5BC]/5'}
             animate-pulse`}>
@@ -328,7 +333,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Custom Dropdown */}
             <div className="group" ref={dropdownRef}>
               <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Composition
@@ -398,13 +402,6 @@ export default function App() {
           </div>
         </div>
       </main>
-
-      {/* --- Footer --- */}
-      {/* <footer className={`relative z-10 w-full py-6 text-center text-xs backdrop-blur-md border-t
-        ${darkMode ? 'border-white/10 text-slate-500 bg-slate-900/60' : 'border-slate-200 text-slate-400 bg-white/60'}`}>
-        <p>&copy; {new Date().getFullYear()} {COMPANY_NAME}. Confidential & Proprietary.</p>
-        <p className="mt-1">Local client-side generation. No PII uploaded.</p>
-      </footer> */}
 
     </div>
   );
