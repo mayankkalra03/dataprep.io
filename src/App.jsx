@@ -127,7 +127,7 @@ const createRow = (eeId, type, memberType, lastName, firstName) => {
 
 export default function App() {
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
