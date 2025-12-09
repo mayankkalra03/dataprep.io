@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "dataprepio"
-  }
+  },
+  "targets": {
+    "dataprepio": {
+      "hosting": {
+        "production": [
+          "dataprep-io"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
