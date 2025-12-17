@@ -225,7 +225,7 @@ export default function App() {
   const setHouseholds = (val) => {
     let v = parseInt(val);
     if (isNaN(v)) v = 1;
-    if (v > 10) v = 10;
+    if (v > 50) v = 50;
     if (v < 1) v = 1;
     setConfig({ ...config, numHouseholds: v });
   };
@@ -318,7 +318,7 @@ export default function App() {
               {/* Input: Households */}
               <div className="group">
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Households (Max 10)
+                  Households (Max 50)
                 </label>
                 <input
                   type="number"
